@@ -88,10 +88,13 @@ def return_None():
 @total_ordering
 class Field(RegisterLookupMixin):
     """Base class for all field types"""
+    ## 所有字段类型的基类
 
     # Designates whether empty strings fundamentally are allowed at the
     # database level.
+    ## 是否允许空字符串
     empty_strings_allowed = True
+    ## 空值
     empty_values = list(validators.EMPTY_VALUES)
 
     # These track each time a Field instance is created. Used to retain order.
@@ -117,10 +120,15 @@ class Field(RegisterLookupMixin):
     # Field flags
     hidden = False
 
+    ## 多对多
     many_to_many = None
+    ## 多对一
     many_to_one = None
+    ## 一对多
     one_to_many = None
+    ## 一对一
     one_to_one = None
+    ## 关系模型
     related_model = None
 
     # Generic field type description, usually overridden by subclasses
@@ -128,6 +136,7 @@ class Field(RegisterLookupMixin):
         return _('Field of type: %(field_type)s') % {
             'field_type': self.__class__.__name__
         }
+    ## 字段描述
     description = property(_description)
 
     def __init__(self, verbose_name=None, name=None, primary_key=False,
@@ -137,16 +146,23 @@ class Field(RegisterLookupMixin):
                  unique_for_year=None, choices=None, help_text='', db_column=None,
                  db_tablespace=None, auto_created=False, validators=(),
                  error_messages=None):
+        ## 字段名
         self.name = name
+        ## 字段别名
         self.verbose_name = verbose_name  # May be set by set_attributes_from_name
         self._verbose_name = verbose_name  # Store original for deconstruction
+        ## 主键
         self.primary_key = primary_key
+        ## 字段最大长度，字段是否唯一
         self.max_length, self._unique = max_length, unique
+        ## 字段是否可以为 blank，或 null
         self.blank, self.null = blank, null
         self.remote_field = rel
         self.is_relation = self.remote_field is not None
         self.default = default
+        ## 字段是否可编辑
         self.editable = editable
+        ## 字段是否支持序列化
         self.serialize = serialize
         self.unique_for_date = unique_for_date
         self.unique_for_month = unique_for_month
@@ -154,10 +170,14 @@ class Field(RegisterLookupMixin):
         if isinstance(choices, collections.abc.Iterator):
             choices = list(choices)
         self.choices = choices
+        ## 字段帮助文本
         self.help_text = help_text
+        ## 数据库索引
         self.db_index = db_index
+        ## 数据库列
         self.db_column = db_column
         self._db_tablespace = db_tablespace
+        ## 字段是否自动创建
         self.auto_created = auto_created
 
         # Adjust the appropriate creation counter, and save our local copy.
@@ -197,6 +217,7 @@ class Field(RegisterLookupMixin):
         return '<%s>' % path
 
     def check(self, **kwargs):
+        ## 字段检查
         return [
             *self._check_field_name(),
             *self._check_choices(),
@@ -211,6 +232,11 @@ class Field(RegisterLookupMixin):
         """
         Check if field name is valid, i.e. 1) does not end with an
         underscore, 2) does not contain "__" and 3) is not "pk".
+
+        ## 检查字段名是否有效：
+        ##     * 不能以下划线结尾
+        ##     * 不能包含双下划线
+        ##     * 不能是 'pk'
         """
         if self.name.endswith('_'):
             return [
@@ -790,14 +816,18 @@ class Field(RegisterLookupMixin):
 
     def has_default(self):
         """Return a boolean of whether this field has a default value."""
+        ## 字段是否有默认值
         return self.default is not NOT_PROVIDED
 
     def get_default(self):
         """Return the default value for this field."""
+        ## 返回字段默认值
         return self._get_default()
 
     @cached_property
     def _get_default(self):
+        ## 获取字段默认值
+
         if self.has_default():
             if callable(self.default):
                 return self.default
@@ -987,17 +1017,23 @@ class BigAutoField(AutoField):
 
 
 class BooleanField(Field):
+    ## 是否允许字段为空字符串
     empty_strings_allowed = False
+    ## 默认错误消息
     default_error_messages = {
         'invalid': _("'%(value)s' value must be either True or False."),
         'invalid_nullable': _("'%(value)s' value must be either True, False, or None."),
     }
+    ## 字段描述
     description = _("Boolean (Either True or False)")
 
     def get_internal_type(self):
+        ## 获取字段内部类型
         return "BooleanField"
 
     def to_python(self, value):
+        ## 将 value 转换为 python 内置的数据类型
+
         if self.null and value in self.empty_values:
             return None
         if value in (True, False):
@@ -1033,6 +1069,7 @@ class BooleanField(Field):
 
 
 class CharField(Field):
+    ## 字段描述
     description = _("String (up to %(max_length)s)")
 
     def __init__(self, *args, **kwargs):
@@ -1040,6 +1077,7 @@ class CharField(Field):
         self.validators.append(validators.MaxLengthValidator(self.max_length))
 
     def check(self, **kwargs):
+        ## 字段检查
         return [
             *super().check(**kwargs),
             *self._check_max_length_attribute(**kwargs),
@@ -1072,9 +1110,11 @@ class CharField(Field):
         return super().cast_db_type(connection)
 
     def get_internal_type(self):
+        ## 返回字段的内部类型
         return "CharField"
 
     def to_python(self, value):
+        ## 将 value 转换为 python 内置类型
         if isinstance(value, str) or value is None:
             return value
         return str(value)
@@ -1144,13 +1184,16 @@ class DateTimeCheckMixin:
 
 
 class DateField(DateTimeCheckMixin, Field):
+    ## 字段是否允许为空字符串
     empty_strings_allowed = False
+    ## 默认错误信息
     default_error_messages = {
         'invalid': _("'%(value)s' value has an invalid date format. It must be "
                      "in YYYY-MM-DD format."),
         'invalid_date': _("'%(value)s' value has the correct format (YYYY-MM-DD) "
                           "but it is an invalid date."),
     }
+    ## 字段描述
     description = _("Date (without time)")
 
     def __init__(self, verbose_name=None, name=None, auto_now=False,

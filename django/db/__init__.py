@@ -13,8 +13,10 @@ __all__ = [
     'DJANGO_VERSION_PICKLE_KEY',
 ]
 
+## 实例化连接处理器
 connections = ConnectionHandler()
 
+## 实例化连接路由
 router = ConnectionRouter()
 
 
