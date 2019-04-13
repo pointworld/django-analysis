@@ -151,9 +151,12 @@ def call_command(command_name, *args, **options):
 class ManagementUtility:
     """
     Encapsulate the logic of the django-admin and manage.py utilities.
+    ## 管理工具类：封装 django-admin 和 manage.py 工具的逻辑
     """
     def __init__(self, argv=None):
+        ## 获取命令行参数
         self.argv = argv or sys.argv[:]
+        ## 获取程序名
         self.prog_name = os.path.basename(self.argv[0])
         if self.prog_name == '__main__.py':
             self.prog_name = 'python -m django'
@@ -197,6 +200,7 @@ class ManagementUtility:
         Try to fetch the given subcommand, printing a message with the
         appropriate command called from the command line (usually
         "django-admin" or "manage.py") if it can't be found.
+        ## 尝试获取给定的子命令
         """
         # Get commands outside of try block to prevent swallowing exceptions
         commands = get_commands()
@@ -221,6 +225,7 @@ class ManagementUtility:
             # If the command is already loaded, use it directly.
             klass = app_name
         else:
+            ## 根据应用名和子命令加载对应的命令类
             klass = load_command_class(app_name, subcommand)
         return klass
 
@@ -302,15 +307,19 @@ class ManagementUtility:
         """
         Given the command-line arguments, figure out which subcommand is being
         run, create a parser appropriate to that command, and run it.
+        ## 根据命令行参数，确定运行哪个子命令，创建该子命令的解析器，然后执行该命令
         """
         try:
+            ## 获取子命令
             subcommand = self.argv[1]
         except IndexError:
+            ## 如果没有指定参数，则默认运行 help 子命令
             subcommand = 'help'  # Display help if no arguments were given.
 
         # Preprocess options to extract --settings and --pythonpath.
         # These options could affect the commands that are available, so they
         # must be processed early.
+        ## 从命令行中抽取 --settings 和 --pythonpath 选项，并做相应的预处理
         parser = CommandParser(usage='%(prog)s subcommand [options] [args]', add_help=False, allow_abbrev=False)
         parser.add_argument('--settings')
         parser.add_argument('--pythonpath')
@@ -332,6 +341,7 @@ class ManagementUtility:
             # Start the auto-reloading dev server even if the code is broken.
             # The hardcoded condition is a code smell but we can't rely on a
             # flag on the command class because we haven't located it yet.
+            ## 启动自动重载的 dev 服务器
             if subcommand == 'runserver' and '--noreload' not in self.argv:
                 try:
                     autoreload.check_errors(django.setup)()
@@ -358,6 +368,7 @@ class ManagementUtility:
 
         self.autocomplete()
 
+        ## help 子命令的处理逻辑
         if subcommand == 'help':
             if '--commands' in args:
                 sys.stdout.write(self.main_help_text(commands_only=True) + '\n')
@@ -372,10 +383,13 @@ class ManagementUtility:
         elif self.argv[1:] in (['--help'], ['-h']):
             sys.stdout.write(self.main_help_text() + '\n')
         else:
+            ## 根据子命令获取对应的命令类
+            ## 根据命令行参数运行该命令
             self.fetch_command(subcommand).run_from_argv(self.argv)
 
 
 def execute_from_command_line(argv=None):
     """Run a ManagementUtility."""
+    ## 根据命令行参数初始化管理工具类
     utility = ManagementUtility(argv)
     utility.execute()

@@ -312,14 +312,18 @@ class BaseCommand:
         ``Exception`` is not ``CommandError``, raise it.
         """
         self._called_from_command_line = True
+        ## 创建解析器
         parser = self.create_parser(argv[0], argv[1])
 
+        ## 解析命令行参数，获取相应的选项
         options = parser.parse_args(argv[2:])
         cmd_options = vars(options)
         # Move positional args out of options to mimic legacy optparse
         args = cmd_options.pop('args', ())
+        ## 处理默认选项
         handle_default_options(options)
         try:
+            ## 执行命令
             self.execute(*args, **cmd_options)
         except Exception as e:
             if options.traceback or not isinstance(e, CommandError):
@@ -333,6 +337,7 @@ class BaseCommand:
             sys.exit(1)
         finally:
             try:
+                ## 关闭所有连接（数据库）
                 connections.close_all()
             except ImproperlyConfigured:
                 # Ignore if connections aren't setup at this point (e.g. no
@@ -344,6 +349,7 @@ class BaseCommand:
         Try to execute this command, performing system checks if needed (as
         controlled by the ``requires_system_checks`` attribute, except if
         force-skipped).
+        ## 尝试执行指定的命令
         """
         if options['force_color'] and options['no_color']:
             raise CommandError("The --no-color and --force-color options can't be used together.")
@@ -383,6 +389,8 @@ class BaseCommand:
         Raise CommandError for any serious message (error or critical errors).
         If there are only light messages (like warnings), print them to stderr
         and don't raise an exception.
+
+        ## 使用系统检查框架去校验整个 Django 项目
         """
         all_issues = self._run_checks(
             app_configs=app_configs,

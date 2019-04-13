@@ -23,14 +23,21 @@ class TemplateCommand(BaseCommand):
     Copy either a Django application layout template or a Django project
     layout template into the specified directory.
 
+    ## 复制一个 Django 应用布局模版或者一个 Django 项目布局模版到一个指定的目录中
+
     :param style: A color style object (see django.core.management.color).
     :param app_or_project: The string 'app' or 'project'.
     :param name: The name of the application or project.
     :param directory: The directory to which the template should be copied.
     :param options: The additional variables passed to project or app templates
+
+    ## 颜色样式对象、应用或者项目、应用或者项目名、目录、传递给应用或项目模版的额外变量
     """
+
+    ## 是否需要执行系统检查
     requires_system_checks = False
     # The supported URL schemes
+    ## 支持的 URL 协议
     url_schemes = ['http', 'https', 'ftp']
     # Rewrite the following suffixes when determining the target filename.
     rewrite_template_suffixes = (
@@ -57,17 +64,20 @@ class TemplateCommand(BaseCommand):
         )
 
     def handle(self, app_or_project, name, target=None, **options):
+        ## 指明创建的是应用还是项目
         self.app_or_project = app_or_project
         self.a_or_an = 'an' if app_or_project == 'app' else 'a'
         self.paths_to_remove = []
         self.verbosity = options['verbosity']
 
+        ## 校验名字
         self.validate_name(name)
 
         # if some directory is given, make sure it's nicely expanded
         if target is None:
             top_dir = path.join(os.getcwd(), name)
             try:
+                ## 创建目录
                 os.makedirs(top_dir)
             except FileExistsError:
                 raise CommandError("'%s' already exists" % top_dir)
@@ -79,7 +89,9 @@ class TemplateCommand(BaseCommand):
                 raise CommandError("Destination directory '%s' does not "
                                    "exist, please create it first." % top_dir)
 
+        ## 扩展
         extensions = tuple(handle_extensions(options['extensions']))
+        ## 额外的文件
         extra_files = []
         for file in options['files']:
             extra_files.extend(map(lambda x: x.strip(), file.split(',')))
@@ -111,6 +123,7 @@ class TemplateCommand(BaseCommand):
             settings.configure()
             django.setup()
 
+        ## 模块目录
         template_dir = self.handle_template(options['template'],
                                             base_subdir)
         prefix_length = len(template_dir) + 1
@@ -184,6 +197,8 @@ class TemplateCommand(BaseCommand):
         Determine where the app or project templates are.
         Use django.__path__[0] as the default because the Django install
         directory isn't known.
+
+        ## 限定 app 或 project 模版的位置
         """
         if template is None:
             return path.join(django.__path__[0], 'conf', subdir)
@@ -206,6 +221,8 @@ class TemplateCommand(BaseCommand):
                            (self.app_or_project, template))
 
     def validate_name(self, name):
+        ## 校验应用或项目名
+
         if name is None:
             raise CommandError('you must provide {an} {app} name'.format(
                 an=self.a_or_an,

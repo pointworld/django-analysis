@@ -21,15 +21,20 @@ naiveip_re = re.compile(r"""^(?:
 
 
 class Command(BaseCommand):
+    ## 命令帮助文本
     help = "Starts a lightweight Web server for development."
 
     # Validation is called explicitly each time the server is reloaded.
+    ## 是否需要系统检查
     requires_system_checks = False
     stealth_options = ('shutdown_message',)
 
+    ## 默认地址
     default_addr = '127.0.0.1'
     default_addr_ipv6 = '::1'
+    ## 默认端口
     default_port = '8000'
+    ## 默认协议
     protocol = 'http'
     server_cls = WSGIServer
 
@@ -61,6 +66,7 @@ class Command(BaseCommand):
 
     def get_handler(self, *args, **options):
         """Return the default WSGI handler for the runner."""
+        ## 返回默认的 WSGI 处理器
         return get_internal_wsgi_application()
 
     def handle(self, *args, **options):
@@ -96,9 +102,12 @@ class Command(BaseCommand):
 
     def run(self, **options):
         """Run the server, using the autoreloader if needed."""
+        ## 运行 server
+
         use_reloader = options['use_reloader']
 
         if use_reloader:
+            ## 通过自动重载的方式运行服务器
             autoreload.run_with_reloader(self.inner_run, **options)
         else:
             self.inner_run(None, **options)
@@ -114,27 +123,38 @@ class Command(BaseCommand):
         quit_command = 'CTRL-BREAK' if sys.platform == 'win32' else 'CONTROL-C'
 
         self.stdout.write("Performing system checks...\n\n")
+        ## 执行系统检查
         self.check(display_num_errors=True)
         # Need to check migrations here, so can't use the
         # requires_migrations_check attribute.
+        ## 检查数据库迁移
         self.check_migrations()
         now = datetime.now().strftime('%B %d, %Y - %X')
+        ## 按给定的格式输出当前时间
         self.stdout.write(now)
         self.stdout.write((
             "Django version %(version)s, using settings %(settings)r\n"
             "Starting development server at %(protocol)s://%(addr)s:%(port)s/\n"
             "Quit the server with %(quit_command)s.\n"
         ) % {
+            ## Django 版本
             "version": self.get_version(),
+            ## 设置
             "settings": settings.SETTINGS_MODULE,
+            ## 协议
             "protocol": self.protocol,
+            ## 地址
             "addr": '[%s]' % self.addr if self._raw_ipv6 else self.addr,
+            ## 端口
             "port": self.port,
+            ## 退出命令
             "quit_command": quit_command,
         })
 
         try:
+            ## 获取一个 WSGI 处理器
             handler = self.get_handler(*args, **options)
+            ## 根据指定的参数运行 server
             run(self.addr, int(self.port), handler,
                 ipv6=self.use_ipv6, threading=threading, server_cls=self.server_cls)
         except OSError as e:
