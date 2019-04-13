@@ -12,7 +12,11 @@ class StaticFilesHandler(WSGIHandler):
     """
     WSGI middleware that intercepts calls to the static files directory, as
     defined by the STATIC_URL setting, and serves those files.
+
+    ## 静态文件处理器类
+    WSGI 中间件可以拦截对静态文件目录的调用
     """
+
     # May be used to differentiate between handler types (e.g. in a
     # request_finished signal)
     handles_files = True

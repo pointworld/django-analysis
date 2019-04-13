@@ -4,6 +4,9 @@ Settings and configuration for Django.
 Read values from the module specified by the DJANGO_SETTINGS_MODULE environment
 variable, and then from django.conf.global_settings; see the global_settings.py
 for a list of all possible variables.
+
+## Django 的设置和配置
+从由 DJANGO_SETTINGS_MODULE 环境变量中指定的模块或 django.conf.global_settings 中读取值
 """
 
 import importlib
@@ -44,6 +47,10 @@ class LazySettings(LazyObject):
     A lazy proxy for either global Django settings or a custom settings object.
     The user can manually configure settings prior to using them. Otherwise,
     Django uses the settings module pointed to by DJANGO_SETTINGS_MODULE.
+
+    ## 一个懒代理，用于全局的 Django 设置或自定义的 settings 对象
+    ## 用户可以手动的配置设置项的优先级
+    ## 默认情况下，Django 会使用由 DJANGO_SETTINGS_MODULE 指定的设置
     """
     def _setup(self, name=None):
         """

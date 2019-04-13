@@ -2,6 +2,7 @@
 Default Django settings. Override these with settings in the module pointed to
 by the DJANGO_SETTINGS_MODULE environment variable.
 """
+## Django 默认的全局配置。可以在模块中指定 DJANGO_SETTINGS_MODULE 环境变量来覆盖某些配置项
 
 
 # This is defined here as a do-nothing function because we can't import
@@ -14,30 +15,40 @@ def gettext_noop(s):
 # CORE             #
 ####################
 
+## 是否开启 DEBUG 模式
 DEBUG = False
 
 # Whether the framework should propagate raw exceptions rather than catching
 # them. This is useful under some testing situations and should never be used
 # on a live site.
+## 框架是否向上传播原生异常，而不是捕获他们。
+## 在某些测试环境下，开启该功能是很有用的，但不应该用于生产环境
 DEBUG_PROPAGATE_EXCEPTIONS = False
 
 # People who get code error notifications.
 # In the format [('Full Name', 'email@example.com'), ('Full Name', 'anotheremail@example.com')]
+## 一个列表，用于指定哪些人可以获取代码错误通知。
+## 若 DEBUG=False 且 AdminEmailHandler 在 LOGGING 中配置了，则当在 request/response 循环中抛出异常时，Django 会发邮件通知这些指定的用户。
 ADMINS = []
 
 # List of IP addresses, as strings, that:
 #   * See debug comments, when DEBUG is true
 #   * Receive x-headers
+## 一个 IP 地址列表：
+##    * 允许 debug() 上下文处理器添加一些变量到 template 上下文
 INTERNAL_IPS = []
 
 # Hosts/domain names that are valid for this site.
 # "*" matches anything, ".example.com" matches example.com and all subdomains
+## 一个字符串列表，用来表示 Django 站点可以服务的 host/domain。
+## 这是一个安全措施，用来预防 HTTP Host header attacks。
 ALLOWED_HOSTS = []
 
 # Local time zone for this installation. All choices can be found here:
 # https://en.wikipedia.org/wiki/List_of_tz_zones_by_name (although not all
 # systems may support all possibilities). When USE_TZ is True, this is
 # interpreted as the default user time zone.
+## 一个字符串，用来指定存储到数据库中的时区
 TIME_ZONE = 'America/Chicago'
 
 # If you set this to True, Django will use timezone-aware datetimes.
@@ -45,9 +56,11 @@ USE_TZ = False
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
+## 语言编码
 LANGUAGE_CODE = 'en-us'
 
 # Languages we provide translations for, out of the box.
+## 开箱即用的语言
 LANGUAGES = [
     ('af', gettext_noop('Afrikaans')),
     ('ar', gettext_noop('Arabic')),
@@ -147,6 +160,7 @@ LANGUAGES_BIDI = ["he", "ar", "fa", "ur"]
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
+## 一个目录列表。用于 Django 寻找翻译文件
 LOCALE_PATHS = []
 
 # Settings for language cookie
@@ -169,6 +183,7 @@ MANAGERS = ADMINS
 
 # Default charset to use for all HttpResponse objects, if a MIME type isn't
 # manually specified. It's used to construct the Content-Type header.
+## 默认字符集
 DEFAULT_CHARSET = 'utf-8'
 
 # Encoding of files read from disk (template and initial SQL files).
@@ -178,28 +193,35 @@ FILE_CHARSET = 'utf-8'
 SERVER_EMAIL = 'root@localhost'
 
 # Database connection info. If left empty, will default to the dummy backend.
+## 数据库配置
 DATABASES = {}
 
 # Classes used to implement DB routing behavior.
+## 数据库路由配置
 DATABASE_ROUTERS = []
 
 # The email backend to use. For possible shortcuts see django.core.mail.
 # The default is to use the SMTP backend.
 # Third-party backends can be specified by providing a Python path
 # to a module that defines an EmailBackend class.
+## 邮箱服务
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Host for sending email.
+## 发送邮件的 HOST
 EMAIL_HOST = 'localhost'
 
 # Port for sending email.
+## 发送邮件的端口
 EMAIL_PORT = 25
 
 # Whether to send SMTP 'Date' header in the local time zone or in UTC.
 EMAIL_USE_LOCALTIME = False
 
 # Optional SMTP authentication information for EMAIL_HOST.
+## 邮箱用户
 EMAIL_HOST_USER = ''
+## 邮箱密码
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
@@ -208,6 +230,7 @@ EMAIL_SSL_KEYFILE = None
 EMAIL_TIMEOUT = None
 
 # List of strings representing installed apps.
+## 在 Django 项目中需要安装的应用列表
 INSTALLED_APPS = []
 
 TEMPLATES = []
@@ -224,9 +247,11 @@ DEFAULT_FROM_EMAIL = 'webmaster@localhost'
 EMAIL_SUBJECT_PREFIX = '[Django] '
 
 # Whether to append trailing slashes to URLs.
+## 是否追加斜线到 URL 末尾
 APPEND_SLASH = True
 
 # Whether to prepend the "www." subdomain to URLs that don't have it.
+## 是否添加 www 到 URL 头部
 PREPEND_WWW = False
 
 # Override the server-derived value of SCRIPT_NAME
@@ -242,6 +267,8 @@ FORCE_SCRIPT_NAME = None
 #         re.compile(r'^SiteSucker.*'),
 #         re.compile(r'^sohu-search'),
 #     ]
+## 需要禁止的用户代理列表
+## 主要用于反爬虫
 DISALLOWED_USER_AGENTS = []
 
 ABSOLUTE_URL_OVERRIDES = {}
@@ -261,13 +288,16 @@ IGNORABLE_404_URLS = []
 # A secret key for this particular Django installation. Used in secret-key
 # hashing algorithms. Set this in your settings, or Django will complain
 # loudly.
+## 用于 hash 算法
 SECRET_KEY = ''
 
 # Default file storage mechanism that holds media.
+## 指定默认的文件存储机制
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
+## 指定用于存储用户上传文件的目录
 MEDIA_ROOT = ''
 
 # URL that handles the media served from MEDIA_ROOT.
@@ -280,9 +310,11 @@ STATIC_ROOT = None
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://example.com/static/", "http://static.example.com/"
+## 静态 URL，用于处理静态文件
 STATIC_URL = None
 
 # List of upload handler classes to be applied in order.
+## 指定处理文件上传的处理器，将会按照指定的列表顺序进行处理
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
@@ -303,6 +335,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 # Directory in which upload streamed files will be temporarily saved. A value of
 # `None` will make Django use the operating system's default temporary directory
 # (i.e. "/tmp" on *nix systems).
+## 指定文件上传的临时目录
 FILE_UPLOAD_TEMP_DIR = None
 
 # The numeric mode to set newly-uploaded files to. The value should be a mode
@@ -322,14 +355,17 @@ FORMAT_MODULE_PATH = None
 
 # Default formatting for date objects. See all available format strings here:
 # https://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+## 指定日期格式化
 DATE_FORMAT = 'N j, Y'
 
 # Default formatting for datetime objects. See all available format strings here:
 # https://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+## 指定日期时间格式化
 DATETIME_FORMAT = 'N j, Y, P'
 
 # Default formatting for time objects. See all available format strings here:
 # https://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+## 指定时间格式化
 TIME_FORMAT = 'P'
 
 # Default formatting for date objects when only the year and month are relevant.
@@ -443,6 +479,7 @@ SECURE_PROXY_SSL_HEADER = None
 # List of middleware to use. Order is important; in the request phase, these
 # middleware will be applied in the order given, and in the response
 # phase the middleware will be applied in reverse order.
+## 中间件
 MIDDLEWARE = []
 
 ############
@@ -498,12 +535,16 @@ CACHE_MIDDLEWARE_ALIAS = 'default'
 
 AUTH_USER_MODEL = 'auth.User'
 
+## 认证后台
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
+## 登录 URL
 LOGIN_URL = '/accounts/login/'
 
+## 登录重定向 URL
 LOGIN_REDIRECT_URL = '/accounts/profile/'
 
+## 登出重定向 URL
 LOGOUT_REDIRECT_URL = None
 
 # The number of days a password reset link is valid for
@@ -565,6 +606,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 LOGGING_CONFIG = 'logging.config.dictConfig'
 
 # Custom logging configuration.
+## 日志配置
 LOGGING = {}
 
 # Default exception reporter filter class used in case none has been

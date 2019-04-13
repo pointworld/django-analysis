@@ -10,6 +10,7 @@ from .resolvers import (
 
 
 def include(arg, namespace=None):
+    ## 应用名
     app_name = None
     if isinstance(arg, tuple):
         # Callable returning a namespace hint.
@@ -31,6 +32,7 @@ def include(arg, namespace=None):
         urlconf_module = arg
 
     if isinstance(urlconf_module, str):
+        ## 加载 url 配置模块
         urlconf_module = import_module(urlconf_module)
     patterns = getattr(urlconf_module, 'urlpatterns', urlconf_module)
     app_name = getattr(urlconf_module, 'app_name', app_name)
@@ -55,6 +57,12 @@ def include(arg, namespace=None):
 
 
 def _path(route, view, kwargs=None, name=None, Pattern=None):
+    ## route:  用来匹配 URL 的模式
+    ## view:   视图函数（该 route 所对应的处理逻辑，会传入一个 HttpRequest 对象
+    ##         作为第一个参数）
+    ## kwargs: 任意个关键字参数，可以作为一个字典传递给目标视图函数
+    ## name:   别名，使你能在 Django 的任意地方唯一地引用它
+
     if isinstance(view, (list, tuple)):
         # For include(...) processing.
         pattern = Pattern(route, is_endpoint=False)
