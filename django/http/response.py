@@ -31,8 +31,13 @@ class HttpResponseBase:
 
     This class doesn't handle content. It should not be used directly.
     Use the HttpResponse and StreamingHttpResponse subclasses instead.
+
+    ## HTTP response 基类，带有可访问字典的 HTTP 头部。
+    ## 该类并不用来处理内容，所以它不应该直接被使用。而是应该使用其子类 HttpResponse
+    ## 和 StreamHttpResponse
     """
 
+    ## 响应码
     status_code = 200
 
     def __init__(self, content_type=None, status=None, reason=None, charset=None):
@@ -58,6 +63,7 @@ class HttpResponseBase:
         self._charset = charset
         if content_type is None:
             content_type = 'text/html; charset=%s' % self.charset
+        ## 内容类型
         self['Content-Type'] = content_type
 
     @property

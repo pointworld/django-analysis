@@ -148,17 +148,24 @@ class Field(RegisterLookupMixin):
                  error_messages=None):
         ## 字段名
         self.name = name
-        ## 字段别名
+        ## 字段别名，如果未指定该参数，Django 会自动使用该字段的属性名作为该参数的值，
+        ## 并且把下划线转换为空格
         self.verbose_name = verbose_name  # May be set by set_attributes_from_name
         self._verbose_name = verbose_name  # Store original for deconstruction
-        ## 主键
+        ## 该字段是否为主键，如果设置为 True，则将该字段设置为该模型的主键
+        ## 在一个模型中，如果你没有对任何一个字段设置 primary_key=True 选项时，Django 会
+        ## 自动添加一个 IntegerField 字段，用于设置为主键
         self.primary_key = primary_key
         ## 字段最大长度，字段是否唯一
+        ## 如果参数 unique 设置为 True，则该字段必须在整个表中保持"值"唯一
         self.max_length, self._unique = max_length, unique
-        ## 字段是否可以为 blank，或 null
+        ## 如果参数 blank 的值为 True，则该字段允许为空
+        ## 如果参数 null 的值为 True，则当该字段为空时，Django 会将数据库中该字段设置为 NULL
         self.blank, self.null = blank, null
         self.remote_field = rel
         self.is_relation = self.remote_field is not None
+        ## 该字段的默认值，可以是一个值或者一个可调用对象
+        ## 如果是可调用对象，则每次实例化模型时都会调用该对象
         self.default = default
         ## 字段是否可编辑
         self.editable = editable
@@ -169,8 +176,11 @@ class Field(RegisterLookupMixin):
         self.unique_for_year = unique_for_year
         if isinstance(choices, collections.abc.Iterator):
             choices = list(choices)
+        ## 参数 choices 接收一个可迭代的列表或元组（基本单位为二元组）
+        ## 如果指定了该参数，在实例化该模型时，该字段只能取选项列表中的值
+        ## 每个二元组的第一个值会存储在数据库中，而第二个值将只会用于显示作用
         self.choices = choices
-        ## 字段帮助文本
+        ## 该字段的帮助文本，主要用于文档
         self.help_text = help_text
         ## 数据库索引
         self.db_index = db_index
