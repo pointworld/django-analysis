@@ -15,6 +15,14 @@ def render(request, template_name, context=None, content_type=None, status=None,
     """
     Return a HttpResponse whose content is filled with the result of calling
     django.template.loader.render_to_string() with the passed arguments.
+
+    ## 将给定的模板与给定的上下文字典组合在一起，并渲染为字符串后，返回一个 HTTPResponse 对象
+    ## request：用于生成此响应的请求对象
+    ## template_name：要使用的模板的名字，或模板名字的序列
+    ## context：要添加到模板上下文的值的字典
+    ## content_type：用于结果文档的 MIME 类型
+    ## status：响应码
+    ## using：用于加载模板的模板引擎
     """
     content = loader.render_to_string(template_name, context, request, using=using)
     return HttpResponse(content, content_type, status)
